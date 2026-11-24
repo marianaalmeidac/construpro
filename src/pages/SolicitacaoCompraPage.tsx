@@ -63,18 +63,18 @@ function SolicitacaoCompraPage() {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" fontWeight={700} gutterBottom>
+      <Typography variant="h4" sx={{ fontWeight: 700 }} gutterBottom>
         Solicitação de compra
       </Typography>
 
-      <Typography variant="body1" color="text.secondary" mb={3}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Organize os itens da sua solicitação.
       </Typography>
 
       {/* DADOS DA SOLICITAÇÃO */}
       <Card>
         <CardContent>
-          <Typography variant="h6" fontWeight={600} mb={3}>
+          <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
             Dados da solicitação
           </Typography>
 
@@ -152,7 +152,7 @@ function SolicitacaoCompraPage() {
               mb: 3,
             }}
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Itens da compra
             </Typography>
 
@@ -179,7 +179,7 @@ function SolicitacaoCompraPage() {
                         <Typography variant="caption" color="text.secondary">
                           Material
                         </Typography>
-                        <Typography fontWeight={600}>
+                        <Typography sx={{ fontWeight: 600 }}>
                           {item.material}
                         </Typography>
                       </Grid>
