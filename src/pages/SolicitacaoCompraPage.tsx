@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Card,
@@ -14,6 +15,17 @@ import {
   Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+
+const corRoxa = "#673DE6";
+
+function dataLocal() {
+  const hoje = new Date();
+  return `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}-${String(hoje.getDate()).padStart(2, "0")}`;
+}
+
+function dadosIniciais() {
+  return { solicitante: "", obra: "obra-1", prioridade: "media", data: dataLocal(), observacoes: "" };
+}
 
 interface ItemCompra {
   material: string;
@@ -36,7 +48,55 @@ function SolicitacaoCompraPage() {
 
   const [itens, setItens] = useState<ItemCompra[]>([]);
 
+  const [dados, setDados] = useState(dadosIniciais);
+  const [editando, setEditando] = useState<number | null>(null);
+  const [mensagem, setMensagem] = useState<{ tipo: "success" | "error"; texto: string } | null>(null);
+  const quantidadeValida = Number.isFinite(Number(item.quantidade)) && Number(item.quantidade) > 0;
+  const itemValido = Boolean(item.material.trim() && item.unidade && quantidadeValida);
+
+  function editarItem(index: number) {
+    setItem({ ...itens[index] });
+    setEditando(index);
+    setOpen(true);
+  }
+
+  function excluirItem(index: number) {
+    if (window.confirm("Deseja excluir este material?")) {
+      setItens(atuais => atuais.filter((_, i) => i !== index));
+      setMensagem(null);
+    }
+  }
+
+  function cancelarSolicitacao() {
+    if (window.confirm("Deseja limpar a solicitação atual?")) {
+      setDados(dadosIniciais());
+      setItens([]);
+      setMensagem(null);
+    }
+  }
+
+  function salvarSolicitacao() {
+    if (!dados.solicitante.trim() || !dados.data || itens.length === 0) {
+      setMensagem({ tipo: "error", texto: "Informe o solicitante, a data e adicione pelo menos um material." });
+      return;
+    }
+    try {
+      const chave = "construpro:solicitacoes";
+      const anteriores = JSON.parse(localStorage.getItem(chave) ?? "[]");
+      if (!Array.isArray(anteriores)) throw new Error("Dados inválidos");
+      localStorage.setItem(chave, JSON.stringify([...anteriores, {
+        id: crypto.randomUUID(), ...dados, itens,
+      }]));
+      setDados(dadosIniciais());
+      setItens([]);
+      setMensagem({ tipo: "success", texto: "Solicitação salva neste navegador." });
+    } catch {
+      setMensagem({ tipo: "error", texto: "Não foi possível salvar a solicitação localmente." });
+    }
+  }
+
   function abrirModal() {
+    setEditando(null);
     setItem({
       material: "",
       descricao: "",
@@ -53,16 +113,17 @@ function SolicitacaoCompraPage() {
   }
 
   function adicionarItem() {
-    if (!item.material || !item.quantidade || !item.unidade) {
-      return;
-    }
-
-    setItens([...itens, item]);
+    if (!itemValido) return;
+    const novoItem = { ...item, material: item.material.trim() };
+    setItens(atuais => editando === null
+      ? [...atuais, novoItem]
+      : atuais.map((atual, index) => index === editando ? novoItem : atual));
+    setMensagem(null);
     setOpen(false);
   }
 
   return (
-    <Box sx={{ p: 4 }}>
+    <Box sx={{ p: 4, "& .MuiButton-contained": { backgroundColor: corRoxa, "&:hover": { backgroundColor: "#512BC4" } }, "& .MuiButton-outlined:not(.MuiButton-colorError)": { color: corRoxa, borderColor: corRoxa } }}>
       <Typography variant="h4" sx={{ fontWeight: 700 }} gutterBottom>
         Solicitação de compra
       </Typography>
@@ -70,6 +131,8 @@ function SolicitacaoCompraPage() {
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         Organize os itens da sua solicitação.
       </Typography>
+
+      {mensagem && <Alert severity={mensagem.tipo} sx={{ mb: 2 }}>{mensagem.texto}</Alert>}
 
       {/* DADOS DA SOLICITAÇÃO */}
       <Card>
@@ -83,7 +146,8 @@ function SolicitacaoCompraPage() {
               <TextField
                 fullWidth
                 label="Solicitante"
-                defaultValue="EVERTON FERNANDES SANTANA DA SILVA"
+                value={dados.solicitante}
+                onChange={(e) => setDados({ ...dados, solicitante: e.target.value })}
               />
             </Grid>
 
@@ -92,7 +156,8 @@ function SolicitacaoCompraPage() {
                 fullWidth
                 label="Obra / Projeto"
                 select
-                defaultValue="obra-1"
+                value={dados.obra}
+                onChange={(e) => setDados({ ...dados, obra: e.target.value })}
               >
                 <MenuItem value="obra-1">Obra 1</MenuItem>
                 <MenuItem value="obra-2">Obra 2</MenuItem>
@@ -105,7 +170,8 @@ function SolicitacaoCompraPage() {
                 fullWidth
                 label="Prioridade"
                 select
-                defaultValue="urgente"
+                value={dados.prioridade}
+                onChange={(e) => setDados({ ...dados, prioridade: e.target.value })}
               >
                 <MenuItem value="baixa">Baixa</MenuItem>
                 <MenuItem value="media">Média</MenuItem>
@@ -119,7 +185,8 @@ function SolicitacaoCompraPage() {
                 fullWidth
                 label="Data da solicitação"
                 type="date"
-                defaultValue={new Date().toISOString().split("T")[0]}
+                value={dados.data}
+                onChange={(e) => setDados({ ...dados, data: e.target.value })}
                 slotProps={{
                   inputLabel: {
                     shrink: true,
@@ -134,7 +201,8 @@ function SolicitacaoCompraPage() {
                 label="Observações"
                 multiline
                 rows={3}
-                defaultValue="VERIFICAR COM URGENCIA!"
+                value={dados.observacoes}
+                onChange={(e) => setDados({ ...dados, observacoes: e.target.value })}
               />
             </Grid>
           </Grid>
@@ -216,6 +284,12 @@ function SolicitacaoCompraPage() {
                           </Typography>
                         </Grid>
                       )}
+                      <Grid size={{ xs: 12 }}>
+                        <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                          <Button variant="outlined" onClick={() => editarItem(index)}>Editar</Button>
+                          <Button variant="outlined" color="error" onClick={() => excluirItem(index)}>Excluir</Button>
+                        </Box>
+                      </Grid>
                     </Grid>
                   </CardContent>
                 </Card>
@@ -234,11 +308,11 @@ function SolicitacaoCompraPage() {
           mt: 3,
         }}
       >
-        <Button variant="outlined">
+        <Button variant="outlined" onClick={cancelarSolicitacao}>
           Cancelar
         </Button>
 
-        <Button variant="contained">
+        <Button variant="contained" onClick={salvarSolicitacao}>
           Salvar solicitação
         </Button>
       </Box>
@@ -250,7 +324,7 @@ function SolicitacaoCompraPage() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Adicionar item</DialogTitle>
+        <DialogTitle>{editando === null ? "Adicionar item" : "Editar item"}</DialogTitle>
 
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 0.5 }}>
@@ -289,6 +363,8 @@ function SolicitacaoCompraPage() {
                 fullWidth
                 label="Quantidade"
                 type="number"
+                error={item.quantidade !== "" && !quantidadeValida}
+                helperText={item.quantidade !== "" && !quantidadeValida ? "Informe uma quantidade maior que zero." : undefined}
                 value={item.quantidade}
                 onChange={(e) =>
                   setItem({
@@ -350,13 +426,10 @@ function SolicitacaoCompraPage() {
           <Button
             variant="contained"
             onClick={adicionarItem}
-            disabled={
-              !item.material ||
-              !item.quantidade ||
-              !item.unidade
-            }
+            disabled={!itemValido}
+            sx={{ backgroundColor: corRoxa, "&:hover": { backgroundColor: "#512BC4" } }}
           >
-            Adicionar
+            {editando === null ? "Adicionar" : "Salvar alteração"}
           </Button>
         </DialogActions>
       </Dialog>
