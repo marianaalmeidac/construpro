@@ -5,7 +5,7 @@ function Header() {
   return (
     <header className="header">
       <div className="header__title">
-        <span>Portal de compras</span>
+        <span>Portal de Compras B2B</span>
       </div>
 
       <div className="header__actions">
