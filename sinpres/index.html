@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SINPRES | Materiais de Construção - Paraíba</title>
+  <link rel="stylesheet" href="men.css">
+  <script src="end.js" defer></script>
+</head>
+<body>
+  <header class="topo">
+    <div>
+      <h1>SINPRES</h1>
+      <p>Pesquisa de preços de materiais de construção</p>
+    </div>
+    <span class="estado">📍 Paraíba (PB)</span>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <h2>Materiais de construção</h2>
+      <p>Consulte os preços de referência demonstrativos para a Paraíba.</p>
+    </section>
+
+    <section class="filtros" aria-label="Pesquisa e filtros">
+      <input type="search" id="search" placeholder="Buscar material..." aria-label="Buscar material">
+      <select id="category" aria-label="Filtrar por categoria">
+        <option value="">Todas as categorias</option>
+        <option value="cimento">Cimento</option>
+        <option value="alvenaria">Alvenaria</option>
+        <option value="cobertura">Cobertura</option>
+        <option value="aco">Aço</option>
+      </select>
+      <button id="filter" type="button">Filtrar</button>
+    </section>
+
+    <p id="resultCount" class="resultado" aria-live="polite"></p>
+
+    <section class="products" aria-label="Lista de materiais">
+      <article class="card" data-name="Cimento CP II-32" data-category="cimento">
+        <div class="icone" aria-hidden="true">🧱</div>
+        <h3>Cimento CP II-32</h3>
+        <p class="preco">R$ 42,75</p>
+        <p>por saco de 50 kg</p>
+        <p class="referencia">Paraíba (PB) · Referência ilustrativa</p>
+        <button class="details" type="button" data-detail="Cimento CP II-32 — R$ 42,75 por saco de 50 kg.">Ver detalhes</button>
+      </article>
+
+      <article class="card" data-name="Tijolo Cerâmico" data-category="alvenaria">
+        <div class="icone" aria-hidden="true">🧱</div>
+        <h3>Tijolo Cerâmico</h3>
+        <p class="preco">R$ 1,12</p>
+        <p>por unidade</p>
+        <p class="referencia">Paraíba (PB) · Referência ilustrativa</p>
+        <button class="details" type="button" data-detail="Tijolo Cerâmico — R$ 1,12 por unidade.">Ver detalhes</button>
+      </article>
+
+      <article class="card" data-name="Telha Cerâmica" data-category="cobertura">
+        <div class="icone" aria-hidden="true">🏠</div>
+        <h3>Telha Cerâmica</h3>
+        <p class="preco">R$ 2,85</p>
+        <p>por unidade</p>
+        <p class="referencia">Paraíba (PB) · Referência ilustrativa</p>
+        <button class="details" type="button" data-detail="Telha Cerâmica — R$ 2,85 por unidade.">Ver detalhes</button>
+      </article>
+
+      <article class="card" data-name="Vergalhão CA-50" data-category="aco">
+        <div class="icone" aria-hidden="true">〰️</div>
+        <h3>Vergalhão CA-50 (10 mm)</h3>
+        <p class="preco">R$ 6,32</p>
+        <p>por metro</p>
+        <p class="referencia">Paraíba (PB) · Referência ilustrativa</p>
+        <button class="details" type="button" data-detail="Vergalhão CA-50 (10 mm) — R$ 6,32 por metro.">Ver detalhes</button>
+      </article>
+    </section>
+
+    <p class="aviso"><strong>Atenção:</strong> os preços desta demonstração são ilustrativos e não vêm de uma consulta oficial em tempo real ao SINPRES.</p>
+  </main>
+</body>
+</html>
